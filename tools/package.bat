@@ -2,7 +2,7 @@
 setlocal
 
 :: Set up variables
-set "root=D:\OneDrive\RC\LuaDev\Showall"
+set "root=D:\MikeDocuments\_GitProjects\ETX_OTX projects\Showall"
 set "tempdir=%root%\Tools\temp"
 set "zipname=ShowItAll_09.zip"
 set "zipoutput=%root%\package\%zipname%"
@@ -18,7 +18,7 @@ xcopy "%root%\docs\*.pdf" "%tempdir%\"
 powershell -command "Compress-Archive -Path '%tempdir%\*' -DestinationPath '%zipoutput%' -Force"
 
 :: Delete the temporary folder after compression
-rd /s /q "%tempdir%"
+:: rd /s /q "%tempdir%"
 
 echo Zip archive complete
 pause
