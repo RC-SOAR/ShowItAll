@@ -136,7 +136,7 @@ local propTelemetry = {
 }
 
 local propTimers = {
-	[480] = {x=288, y=102, font=0, xOffset = 22, dy=20},
+	[480] = {x=288, y=100, font=0, xOffset = 22, dy=20},
 	[800] = {x=520, y=180, font=0, xOffset = 22, dy=25},
 }
 
