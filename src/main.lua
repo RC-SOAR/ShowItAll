@@ -4,7 +4,7 @@ local WGTNAME = "showal" .. "0.9"  -- max 9 characters
 HISTORY
 =======
 Author Mike Shellim http://www.rc-soar.com/opentx/lua
-2026-02-14  v0.9.19	Mods for TX15 and TX16
+2026-02-14  v0.9.19	Refactored; added support for 800 pixel wide screens (TX16S Mk3)
 2025-07-24  v0.9.18	Radios without T5/T6: fixed 'Error in create(): /WIDGETS/ShowAll/main.lua:187:"
 2024-12-25  v0.9.17	Changed two unintended global declarations to local.
 2024-12-24  v0.9.16	Fixed occasional double outputting of trims. Tidied up trims format.
@@ -40,7 +40,8 @@ At startup looks for output named 'armed'. If found, flashes
 
 REQUIREMENTS
 ============
-Transmitter with colour screen (X10, X12, T16 etc.)
+Transmitter with colour screen 480x272 or 800x480. 
+Other screens are not supported.
 OpenTX v 2.2 or later
 
 INSTRUCTIONS
@@ -116,12 +117,12 @@ local propsSwitchSymbols = {
 
 local propsSwitches = {
 	[480] = {x=6, y=36, dx=40, dy=12, font=SMLSIZE, symXOffset=22, symYOffset=4	},
-	[800] = {x=6, y=36, dx=40, dy=12, font=SMLSIZE, symXOffset=22, symYOffset=4	},
+	[800] = {x=6, y=50, dx=40, dy=18, font=SMLSIZE, symXOffset=25, symYOffset=6	},
 }
 
 local propFM = {
 	[480] = {x=130, y=105, font=MIDSIZE},
-	[800] = {x=130, y=105, font=MIDSIZE},
+	[800] = {x=245, y=180, font=MIDSIZE},
 }
 
 local propModelName = {
@@ -131,37 +132,37 @@ local propModelName = {
 
 local propEssentials = {
 	[480] = {x=106, y=29, font=0, xPitch = 90, xValOffset=50, lineHt = 18},
-	[800] = {x=106, y=29, font=0, xPitch = 90, xValOffset=50, lineHt = 18},
+	[800] = {x=200, y=50, font=0, xPitch = 120, xValOffset=70, lineHt = 25},
 }
 
 local propTimers = {
 	[480] = {x=288, y=102, font=0, xOffset = 22, dy=18},
-	[800] = {x=288, y=102, font=0, xOffset = 22, dy=18},
+	[800] = {x=520, y=180, font=0, xOffset = 22, dy=25},
 }
 
 local propLS = {
-	[480] = {x=288, y=39, w=6, h=7, font=SMLSIZE},
-	[800] = {x=288, y=39, w=6, h=7, font=SMLSIZE},
+	[480] = {x=288, y=39, w=6, h=7, xPitch=8, xSep=12, yPitch=8, font=SMLSIZE},
+	[800] = {x=520, y=50, w=8, h=9, xPitch=10, xSep=14, yPitch=12, font=SMLSIZE},
 }
 
 local propSticks = {
 	[480] = {x=6, y=105, dy=12},
-	[800] = {x=6, y=105, dy=12},
+	[800] = {x=6, y=180, dy=18},
 }
 
 local propTrims = {
 	[480] = {x=144, y=135, dx = 52, dy=12, font=SMLSIZE},
-	[800] = {x=144, y=135, dx = 52, dy=12, font=SMLSIZE},
+	[800] = {x=265, y=230, dx = 52, dy=20, font=SMLSIZE},
 }
 
 local propChans = {
 	[480] = {x=65, y=105, dy=8, charLtOffset = -3, charRtOffset = 38, yTxtOff = -5, wRect = 36,  barHt = 5,font=SMLSIZE},
-	[800] = {x=65, y=105, dy=8, charLtOffset = -3, charRtOffset = 38, yTxtOff = -5, wRect = 36,  barHt = 5,font=SMLSIZE},
+	[800] = {x=90, y=185, dy=12, charLtOffset = -3, charRtOffset = 65, yTxtOff = -5, wRect = 60,  barHt = 9,font=SMLSIZE},
 }
 
 local propAlerts = {
 	[480] = {x=287, y=0, xOffsetArmed=-54, yOffsetVer=5, fontArmed=MIDSIZE, fontVer=SMLSIZE},
-	[800] = {x=287, y=0, xOffsetArmed=-54, yOffsetVer=5, fontArmed=MIDSIZE, fontVer=SMLSIZE},
+	[800] = {x=520, y=0, xOffsetArmed=-54, yOffsetVer=5, fontArmed=MIDSIZE, fontVer=SMLSIZE},
 }
 	
 -- ========= F U N C T I O N S =============
@@ -552,11 +553,11 @@ local function drawLS (zone)
 		i = i + 1
 		if i%10 == 0 then
 			x = x0
-			y = y + 9
+			y = y + p.yPitch
 		elseif i%5 == 0 then
-			x = x + 12
+			x = x + p.xSep
 		else
-			x = x + 8
+			x = x + p.xPitch
 		end
 	end
 	lcd.drawText (x, y-4, "LS 01-"..nLS, p.font + colorFlags)
@@ -643,7 +644,7 @@ end
 FUNCTION: drawAlerts
 --]]
 local function drawAlerts (zone)
-	local p=propAlerts [LCD_W]
+	local p = propAlerts [LCD_W]
 	local x = zone.x + p.x
 	local y = zone.y + p.y
 	-- draw motor armed' warning or OTX version.
@@ -680,19 +681,19 @@ local function refresh(wgt)
 		colorFlags = CUSTOM_COLOR
 	end
 
-	-- render, assume full screen
-	-- add check here?
+	-- check that it's a supported resolutoin
+	if propFM [LCD_W] == nil then
+		lcd.drawText (wgt.zone.x + 10, wgt.zone.y + 10, "Unsupported screen", MIDSIZE + colorFlags)
+		return
+	end
 
     drawModelName (wgt.zone)
     drawSwitches (wgt.zone)
     drawSticks (wgt.zone)
     drawChans (wgt.zone)
-
     drawFM (wgt.zone)
     drawTrims (wgt.zone)
     drawEssentials (wgt.zone)
-
-    -- drawTimers (wgt.zone.x + 288, wgt.zone.y + 100, 0, 2)
 	drawTimers (wgt.zone)
     drawLS (wgt.zone)
     drawAlerts (wgt.zone)
