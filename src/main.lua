@@ -112,7 +112,7 @@ local LSDefHi -- bitmap of definition state for LS's 32-63
 
 local propsSwitchSymbols = {
 	[480] = {w=5, h=8, weight=2},
-	[800] = {w=5, h=8, weight=2},
+	[800] = {w=5, h=10, weight=2},
 }
 
 local propsSwitches = {
@@ -162,7 +162,7 @@ local propChans = {
 
 local propAlerts = {
 	[480] = {x=287, y=0, xOffsetArmed=-54, yOffsetVer=5, fontArmed=MIDSIZE, fontVer=SMLSIZE},
-	[800] = {x=520, y=0, xOffsetArmed=-54, yOffsetVer=5, fontArmed=MIDSIZE, fontVer=SMLSIZE},
+	[800] = {x=520, y=5, xOffsetArmed=-54, yOffsetVer=5, fontArmed=MIDSIZE, fontVer=SMLSIZE},
 }
 	
 -- ========= F U N C T I O N S =============
@@ -461,53 +461,35 @@ local function drawEssentials (zone)
 	local x0 = zone.x + p.x
 	local y0 = zone.y + p.y
 
-	local xOffset = p.xValOffset
-  	local xPitch = p.xPitch
-	local lineht = p.lineHt
-	local flags = p.font + colorFlags
-  	local cnt = 0
-  	local x, y
-  
-  	local function incCnt ()
-		cnt = cnt+1
-		if cnt % 2 == 0 then
-			x = x0
-			y = y + lineht
-		else
-			x = x + xPitch
-		end
-	end
-
-	-- Draw Tx and Rx voltage
-	x = x0
-	y = y0
-	lcd.drawText (x, y, 'TxBt:', flags)
-	lcd.drawText (x + xOffset, y, formatVolts(getValue(idTxV)), flags)
-	incCnt()
-
+	local fields = {}
+	fields [#fields + 1] = {'TxBt:',formatVolts(getValue(idTxV))}
 	local val, label = getAirBatt()
-	if val then
-		lcd.drawText (x, y, label .. ":", flags)
-		lcd.drawText (x+ xOffset, y, formatVolts(val), flags)
-		incCnt()
-	end
+	fields [#fields + 1] =  {label .. ':', formatVolts(val)}
+	fields [#fields + 1] = {'1RSS:', getValue('1RSS')}
+	fields [#fields + 1] = {'2RSS:', getValue('2RSS')}
+	fields [#fields + 1] = {'RQly:', getValue('RQly')}
+	fields [#fields + 1] = {'RSSI:', getValue('RSSI')}
+	fields [#fields + 1] = {'VFR:', getValue('VFR')}
 
-	-- Draw other telemetry fields
-	local function drawData (stTelem)
-		local val = getValue (stTelem)
+	local flags = p.font + colorFlags
+	local x = x0
+	local y = y0
+  	local cnt = 0
+	for i = 1, #fields do
+		val = fields [i][2]
 		if val and val ~= 0 then
-			lcd.drawText (x, y, stTelem .. ':' , flags)
-			lcd.drawText (x + xOffset, y, val, flags)
-			incCnt ()
+			lcd.drawText (x, y, fields[i][1], flags)
+			lcd.drawText (x + p.xValOffset, y, val, flags)
+			
+			cnt = cnt+1
+			if cnt % 2 == 0 then
+				x = x0
+				y = y + p.lineHt
+			else
+				x = x + p.xPitch
+			end
 		end
 	end
-
-	drawData ('1RSS')
-	drawData ('2RSS')
-	drawData ('RQly')
-	drawData ('RSSI')
-	drawData ('VFR')
-
 end
 
 --[[
