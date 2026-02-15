@@ -126,22 +126,22 @@ local propFM = {
 }
 
 local propModelName = {
-	[480] = {x=2, y=2, font=MIDSIZE},
+	[480] = {x=2, y=0, font=MIDSIZE},
 	[800] = {x=2, y=2, font=MIDSIZE},
 }
 
-local propEssentials = {
+local propTelemetry = {
 	[480] = {x=106, y=29, font=0, xPitch = 90, xValOffset=50, lineHt = 18},
 	[800] = {x=200, y=50, font=0, xPitch = 120, xValOffset=70, lineHt = 25},
 }
 
 local propTimers = {
-	[480] = {x=288, y=102, font=0, xOffset = 22, dy=18},
+	[480] = {x=288, y=102, font=0, xOffset = 22, dy=20},
 	[800] = {x=520, y=180, font=0, xOffset = 22, dy=25},
 }
 
 local propLS = {
-	[480] = {x=288, y=39, w=6, h=7, xPitch=8, xSep=12, yPitch=8, font=SMLSIZE},
+	[480] = {x=288, y=39, w=6, h=7, xPitch=8, xSep=12, yPitch=9, font=SMLSIZE},
 	[800] = {x=520, y=50, w=8, h=9, xPitch=10, xSep=14, yPitch=12, font=SMLSIZE},
 }
 
@@ -267,7 +267,7 @@ local function create(zone, options)
 		i = i + 1
 	end
 
-  -- stick labels and ids
+  	-- stick labels and ids
 	sticks={
 		{name='A', id=getFieldInfo('ail').id},
 		{name='E', id=getFieldInfo('ele').id},
@@ -393,8 +393,6 @@ local function drawModelName (zone)
 	lcd.drawText (zone.x + p.x, zone.y + p.y, strname, p.font + colorFlags)
 end
 
-
-
 --[[
 FUNCTION: formatVolts (val)
   Converts a floating point number to string representation with 
@@ -454,10 +452,10 @@ local function getAirBatt ()
 end
 
 --[[
-FUNCTION: drawEssentials
+FUNCTION: drawTelemetry
 --]]
-local function drawEssentials (zone)
-	local p = propEssentials [LCD_W]
+local function drawTelemetry (zone)
+	local p = propTelemetry [LCD_W]
 	local x0 = zone.x + p.x
 	local y0 = zone.y + p.y
 
@@ -480,7 +478,6 @@ local function drawEssentials (zone)
 		if val and val ~= 0 then
 			lcd.drawText (x, y, fields[i][1], flags)
 			lcd.drawText (x + p.xValOffset, y, val, flags)
-			
 			cnt = cnt+1
 			if cnt % 2 == 0 then
 				x = x0
@@ -500,7 +497,7 @@ local function drawTimers(zone)
 	local x = zone.x + p.x
 	local y = zone.y + p.y
 	for i = 0, nTmr-1 do
-		local t = getValue(idTmr1+i)
+		local t = getValue (idTmr1 + i)
 		lcd.drawText (x, y, "t" .. (i+1) ..":", p.font + colorFlags)
 		lcd.drawText (x + p.xOffset, y, hms (t) , p.font + colorFlags + (t<0 and INVERS or 0))
 		y = y + p.dy
@@ -523,7 +520,7 @@ local function drawLS (zone)
 		local v = getLSVal (i)
 		if not v then
 			-- undefined
-			lcd.drawFilledRectangle(x+w/2-2, y+h/2-1, 3, 3, colorFlags)
+			lcd.drawFilledRectangle( (x + w/2 - 2), (y + h/2 - 1), 3, 3, colorFlags)
 		elseif v > 0 then
 			-- defined and true
 			lcd.drawFilledRectangle(x, y, w, h, colorFlags)
@@ -542,7 +539,7 @@ local function drawLS (zone)
 			x = x + p.xPitch
 		end
 	end
-	lcd.drawText (x, y-4, "LS 01-"..nLS, p.font + colorFlags)
+	lcd.drawText (x, y - 4, "LS 01-"..nLS, p.font + colorFlags)
 end
 
 --[[
@@ -675,7 +672,7 @@ local function refresh(wgt)
     drawChans (wgt.zone)
     drawFM (wgt.zone)
     drawTrims (wgt.zone)
-    drawEssentials (wgt.zone)
+    drawTelemetry (wgt.zone)
 	drawTimers (wgt.zone)
     drawLS (wgt.zone)
     drawAlerts (wgt.zone)
