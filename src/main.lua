@@ -1,4 +1,5 @@
-local WGTNAME = "showal" .. "0.9"  -- max 9 characters
+local WGTNAME = "showal0.9"  -- max 9 characters
+local fullVersion = "0.9.19"
 
 --[[
 HISTORY
@@ -117,7 +118,7 @@ local propsSwitchSymbols = {
 
 local propsSwitches = {
 	[480] = {x=6, y=36, dx=40, dy=12, font=SMLSIZE, symXOffset=22, symYOffset=4	},
-	[800] = {x=6, y=50, dx=40, dy=18, font=SMLSIZE, symXOffset=25, symYOffset=6	},
+	[800] = {x=6, y=58, dx=70, dy=18, font=SMLSIZE, symXOffset=25, symYOffset=6	},
 }
 
 local propFM = {
@@ -132,7 +133,7 @@ local propModelName = {
 
 local propTelemetry = {
 	[480] = {x=106, y=29, font=0, xPitch = 90, xValOffset=50, lineHt = 18},
-	[800] = {x=200, y=50, font=0, xPitch = 120, xValOffset=70, lineHt = 25},
+	[800] = {x=200, y=58, font=0, xPitch = 120, xValOffset=70, lineHt = 25},
 }
 
 local propTimers = {
@@ -142,7 +143,7 @@ local propTimers = {
 
 local propLS = {
 	[480] = {x=288, y=39, w=6, h=7, xPitch=8, xSep=12, yPitch=9, font=SMLSIZE},
-	[800] = {x=520, y=50, w=8, h=9, xPitch=10, xSep=14, yPitch=12, font=SMLSIZE},
+	[800] = {x=520, y=58, w=8, h=9, xPitch=10, xSep=14, yPitch=12, font=SMLSIZE},
 }
 
 local propSticks = {
@@ -160,17 +161,17 @@ local propChans = {
 	[800] = {x=90, y=185, dy=12, charLtOffset = -3, charRtOffset = 65, yTxtOff = -5, wRect = 60,  barHt = 9,font=SMLSIZE},
 }
 
-local propAlerts = {
-	[480] = {x=287, y=0, xOffsetArmed=-54, yOffsetVer=5, fontArmed=MIDSIZE, fontVer=SMLSIZE},
-	[800] = {x=520, y=5, xOffsetArmed=-54, yOffsetVer=5, fontArmed=MIDSIZE, fontVer=SMLSIZE},
+local propInfo = {
+	[480] = {xArmed = 233, yArmed = 0, xVer = 287, yVer1 = 0, yVer2 = 13, fontArmed=MIDSIZE, fontVer=SMLSIZE},
+	[800] = {xArmed = 466, yArmed = 5, xVer = 520, yVer1 = 10, yVer2=28,fontArmed=MIDSIZE, fontVer=SMLSIZE},
 }
 	
 -- ========= F U N C T I O N S =============
 
 --[[
 FUNCTION: initLSDefs
-Populate logical switch bitmap cache. 1=defined, 0=undefined
-(Cache needed as getLogicalSwitch is slow.)
+Populate logical switch bitmap cache where 1=defined, 0=undefined.
+Cache needed as getLogicalSwitch is slow.
 --]]
 local function initLSDefs ()
 	LSDefLo = 0
@@ -185,11 +186,9 @@ end
 
 --[[
 FUNCTION: getLSVal
-	Returns logical switch value or nil
-	Nil = undefined
-	1024 = true
-	-1024 = false
-	If SHOW_UNDEF_LS_AS_DOT is false, then undefined LS's will be treated as false
+Get logical switch value.
+	@param i number - logical switch index
+	@return number - 1024 (true), -1024 (false), or nil (undefined)
 --]]
 local function getLSVal (i)
 	local val = getValue (idLS1 + i)
@@ -204,7 +203,10 @@ end
 
 --[[
 FUNCTION: getNumItems
-Determine the number of items in a field
+Determine the number of items in a field.
+	@param field string - field name prefix (e.g., 'ls')
+	@param maxitems number - maximum items to check
+	@return number - count of items found
 --]]
 local function getNumItems (field, maxitems)
 	local i = 1
@@ -218,10 +220,12 @@ local function getNumItems (field, maxitems)
 end
 
 --[[
-==================================================
 FUNCTION: create
-Called by OpenTX to create the widget
-==================================================
+Create the widget. Called by OpenTX during widget initialization.
+Caches field IDs and initializes logical switch bitmaps.
+	@param zone table - display zone
+	@param options table - widget options
+	@return table - widget state
 --]]
 
 local function create(zone, options)
@@ -254,7 +258,7 @@ local function create(zone, options)
 	-- Initialise LS bitmap
 	initLSDefs ()
 
-	-- look for output channel named 'armed'
+	-- search for output channel named 'armed'
 	idchArmed = nil
 	local i = 0
 	while true do
@@ -280,21 +284,19 @@ end
 
 
 --[[
-==================================================
 FUNCTION: update
-Called by OpenTX on registration and at
-change of settings
-==================================================
+Update widget settings. Called by OpenTX when widget options change.
+	@param wgt table - widget state
+	@param newOptions table - new widget options
 --]]
 local function update(wgt, newOptions)
     wgt.options = newOptions
 end
 
 --[[
-==================================================
 FUNCTION: background
-Periodically called by OpenTX
-==================================================
+Background update. Called periodically by OpenTX.
+	@param wgt table - widget state
 --]]
 local function background(wgt)
 end
@@ -302,7 +304,9 @@ end
 
 --[[
 FUNCTION: hms
-Convert time in seconds into string [-]hh:mm:ss
+Convert time in seconds to string format [-]hh:mm:ss.
+	@param n number - time in seconds (may be negative)
+	@return string - formatted as [-]hh:mm:ss
 --]]
 local function hms (n)
 
@@ -332,7 +336,10 @@ end
 
 --[[
 FUNCTION: drawSwitchSymbol
-Draw a symobol representing switch state up/middle/down
+Draw switch state symbol (up/middle/down).
+	@param x number - x coordinate
+	@param y number - y coordinate
+	@param val number - switch value (-1=up, 0=middle, >0=down)
 --]]
 local function drawSwitchSymbol (x,y,val)
 	local p = propsSwitchSymbols [LCD_W]
@@ -352,26 +359,30 @@ end
 
 --[[
 FUNCTION: drawSwitches
-Draw switch block
+Draw all switch states (SA-SH).
+	@param zone table - display zone
 --]]
 local function drawSwitches (zone)
 	-- Switches
 	local p = propsSwitches [LCD_W]
 	local x = zone.x + p.x
-	local y = zone.y + p.y
+	local y0 = zone.y + p.y
+	local y = y0
 	for i = 0, 7 do
 		lcd.drawText (x, y, "S".. string.char(string.byte('A')+i), p.font + colorFlags)
 		drawSwitchSymbol (x + p.symXOffset, y + p.symYOffset, getValue (idSA+i))
 		y = y + p.dy
 		if i == 3 then
-			x = p.x + p.dx
-			y = p.y
+			x = x + p.dx
+			y = y0
 		end
 	end
 end
 
 --[[
 FUNCTION: drawFM
+Draw current flight mode name.
+	@param zone table - display zone
 --]]
 local function drawFM (zone)
 	local p = propFM [LCD_W]
@@ -386,6 +397,8 @@ end
 
 --[[
 FUNCTION: drawModelName
+Draw the model name.
+	@param zone table - display zone
 --]]
 local function drawModelName (zone)
 	local p = propModelName [LCD_W]
@@ -394,65 +407,62 @@ local function drawModelName (zone)
 end
 
 --[[
-FUNCTION: formatVolts (val)
-  Converts a floating point number to string representation with 
-  one digit after the decimal point.
-  Workaround for buggy string.format() 
-  https://github.com/opentx/opentx/issues/6201
+FUNCTION: to1DP
+Format number with one decimal place. Equivalent to string.format("%.1f", val).
+Workaround for buggy string.format() in OpenTX.
+See: https://github.com/opentx/opentx/issues/6201
+	@param val number - value to format
+	@return string - formatted value (e.g., "12.3") or nil if invalid
 --]]
-
-local function formatVolts (val)
-	val = tonumber (val)
-	if not val then return end
-	local v 
-	v = (math.floor (val * 10 + 0.5)) / 10
-	v = tostring (v)
-	if not string.find (v, '.', nil, true) then
-		v = v .. '.0'
+local function to1DP (val)
+	val = tonumber(val)
+	if not val then return nil end
+	local a = math.floor(math.abs(val) * 10 + 0.5)
+	local intpart = math.floor(a / 10)
+	local dec = a % 10
+	return (val < 0 and "-" or "") .. intpart .. "." .. dec
+end
+--[[
+FUNCTION: getCelsTotalVoltage
+Sum cell voltages from cells table.
+	@param tCells table - array of cell voltages
+	@return number - total voltage
+--]]
+local function getCelsTotalVoltage (tCells)
+	local volts = 0
+	for i = 1, #tCells do
+		volts = volts + tCells[i]
 	end
-	return v
+	return volts
 end
 
 --[[
-  FUNCTION: getAirBatt
-  Finds highest priority active sensor from batsens {} table.
-  returns sensor name and voltage, or '---'/nil if not found
+FUNCTION: getAirBatt
+Get air battery sensor reading. Finds highest priority active sensor from batsens table.
+	@return table - {sensor_name, voltage_string}
 --]]
 local function getAirBatt ()
 	local val
-	local label
-		for i = 1, #batsens do
-			val = getValue(batsens[i])
-			if type (val) == "table" then
-				-- Cels. Calculate pack voltage.
-				local tb = val
-				val = 0
-				for j =1, #tb do
-					val = val + tb[j]
-				end
-				label = 'Cels'
-				-- done
-				break
-			end
-
-			-- not Cels sensor, is this a valid sensor?
-			if val and (val ~= 0) then
-				label = batsens [i]
-		-- done
-				break
-			end
+	local sensor
+	for i = 1, #batsens do
+		sensor = batsens[i]
+		val = getValue(sensor)
+		print ("+++ Sensor", sensor, val)
+		if sensor == "Cels" and type (val) == "table" then
+			val = getCelsTotalVoltage(val)
 		end
-
-		-- No deal?
-	if not label then 
-		val = nil 
-		label = '---'
+		if val and val > 0 then
+			val = to1DP(val)
+			return {sensor, val}
+		end
 	end
-	return val, label
+	return {'NoBat', nil}
 end
 
 --[[
 FUNCTION: drawTelemetry
+Draw telemetry values (battery, RSSI, etc.).
+	@param zone table - display zone
 --]]
 local function drawTelemetry (zone)
 	local p = propTelemetry [LCD_W]
@@ -460,9 +470,8 @@ local function drawTelemetry (zone)
 	local y0 = zone.y + p.y
 
 	local fields = {}
-	fields [#fields + 1] = {'TxBt:',formatVolts(getValue(idTxV))}
-	local val, label = getAirBatt()
-	fields [#fields + 1] =  {label .. ':', formatVolts(val)}
+	fields [#fields + 1] = {'TxBt:',to1DP(getValue(idTxV))}
+	fields [#fields + 1] =  getAirBatt()
 	fields [#fields + 1] = {'1RSS:', getValue('1RSS')}
 	fields [#fields + 1] = {'2RSS:', getValue('2RSS')}
 	fields [#fields + 1] = {'RQly:', getValue('RQly')}
@@ -474,7 +483,7 @@ local function drawTelemetry (zone)
 	local y = y0
   	local cnt = 0
 	for i = 1, #fields do
-		val = fields [i][2]
+		local val = fields [i][2]
 		if val and val ~= 0 then
 			lcd.drawText (x, y, fields[i][1], flags)
 			lcd.drawText (x + p.xValOffset, y, val, flags)
@@ -491,6 +500,8 @@ end
 
 --[[
 FUNCTION: drawTimers
+Draw timer values.
+	@param zone table - display zone
 --]]
 local function drawTimers(zone)
 	local p = propTimers [LCD_W]
@@ -506,6 +517,8 @@ end
 
 --[[
 FUNCTION: drawLS
+Draw logical switch states.
+	@param zone table - display zone
 --]]
 local function drawLS (zone)
 	local p = propLS [LCD_W]
@@ -544,6 +557,8 @@ end
 
 --[[
 FUNCTION: drawSticks
+Draw stick positions.
+	@param zone table - display zone
 --]]
 local function drawSticks (zone)
 	local p = propSticks [LCD_W]
@@ -560,6 +575,8 @@ end
 
 --[[
 FUNCTION: drawTrims
+Draw trim values.
+	@param zone table - display zone
 --]]
 local function drawTrims (zone)
 
@@ -587,6 +604,8 @@ end
 
 --[[
 FUNCTION: drawChans
+Draw output channel bars.
+	@param zone table - display zone
 --]]
 local function drawChans (zone)
 	local p = propChans [LCD_W]
@@ -620,32 +639,33 @@ local function drawChans (zone)
 end
 
 --[[
-FUNCTION: drawAlerts
+FUNCTION: drawInfo
+Draw motor armed warning or version info.
+	@param zone table - display zone
 --]]
-local function drawAlerts (zone)
-	local p = propAlerts [LCD_W]
-	local x = zone.x + p.x
-	local y = zone.y + p.y
+local function drawInfo (zone)
+	local p = propInfo [LCD_W]
 	-- draw motor armed' warning or OTX version.
 	if idchArmed and getValue (idchArmed) > 0 then
-		lcd.drawText (x + p.xOffsetArmed, y, "motor armed!", p.fontArmed +  BLINK + INVERS)
+		lcd.drawText (zone.x + p.xArmed, zone.y + p.yArmed, "motor armed!", p.fontArmed +  BLINK + INVERS)
 	else
-		lcd.drawText (x, y + p.yOffsetVer, strVer, p.fontVer + colorFlags)
+		-- lcd.drawText (x, y + p.yOffsetVer, strVer .. "/" .. fullVersion, p.fontVer + colorFlags)
+		lcd.drawText (zone.x + p.xVer, zone.y + p.yVer1, strVer, p.fontVer + colorFlags)
+		lcd.drawText (zone.x + p.xVer, zone.y + p.yVer2, "ShowAll " .. fullVersion, p.fontVer + colorFlags)
 	end
 end
 
 
 
 --[[
-==================================================
 FUNCTION: refresh
-Called by OpenTX when the Widget is being displayed
-==================================================
+Refresh widget display. Called by OpenTX when the widget is displayed.
+	@param wgt table - widget state
 --]]
 local function refresh(wgt)
 
 	-- Colour option
-	-- Check for LS bit (Github #7059)
+	-- Check for LS bit (OpenTX Github #7059)
 	if bit32.btest (wgt.options["Use dflt clrs"], 1) then
 		colorFlags = 0
 	else
@@ -675,7 +695,7 @@ local function refresh(wgt)
     drawTelemetry (wgt.zone)
 	drawTimers (wgt.zone)
     drawLS (wgt.zone)
-    drawAlerts (wgt.zone)
+    drawInfo (wgt.zone)
 end
 
 return { name=WGTNAME, options=defaultOptions, create=create, update=update, refresh=refresh, background=background }
