@@ -1,7 +1,16 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
 local fullVersion = "0.9.19"
 
+
+
 --[[
+DESCRIPTION
+===========
+Displays basic info about active model.
+At startup looks for output named 'armed'. If found, flashes
+  'motor armed' when output value > 0.
+
+
 HISTORY
 =======
 Author Mike Shellim http://www.rc-soar.com/opentx/lua
@@ -33,23 +42,15 @@ Author Mike Shellim http://www.rc-soar.com/opentx/lua
 					Cosmetic improvements
 2019-11-23  v0.9.0 	First release
 
-DESCRIPTION
-===========
-Displays basic info about active model.
-At startup looks for output named 'armed'. If found, flashes
-  'motor armed' when output value > 0.
-
 REQUIREMENTS
 ============
 Transmitter with colour screen 480 or 800 pixels wide
 Other screens are not supported.
 OpenTX v 2.2 or later
 
-INSTRUCTIONS
+INSTALLATION INSTRUCTIONS
 ============
-Please read instructions in the zip package, or download from :
-https://rc-soar.com/opentx/lua/showitall/ShowItAll_09.pdf
-
+Please read instructions provided in the zip package
 
 DISCLAIMER
 ==========
@@ -90,7 +91,8 @@ local idchArmed
 local idCh1
 local strVer
 
--- voltage telemetry sensors in priority order
+-- voltage telemetry sensors in priority order. 
+-- The first active sensor is displayed.
 local batsens = {"Cels", "RxBt", "A1", "A2", "A3", "A4"}
 
 -- item counts
@@ -210,14 +212,12 @@ Determine the number of items in a field.
 	@return number - count of items found
 --]]
 local function getNumItems (field, maxitems)
-	local i = 1
-	while true do
-		if i > maxitems or not getFieldInfo(field ..i) then
-			break
-		end
-		i = i + 1
-	end
-	return i-1
+    for i = 1, maxitems do
+        if not getFieldInfo(field .. i) then
+            return i - 1
+        end
+    end
+    return maxitems
 end
 
 --[[
