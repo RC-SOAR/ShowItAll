@@ -4,7 +4,7 @@ setlocal
 :: Set up variables
 set "root=D:\MikeDocuments\_GitProjects\ETX_OTX projects\Showall"
 set "tempdir=%root%\Tools\temp"
-set "zipname=ShowItAll_09.zip"
+set "zipname=ShowItAll_0919.zip"
 set "zipoutput=%root%\package\%zipname%"
 
 :: Clean up any previous temp folder

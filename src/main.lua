@@ -1,52 +1,16 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
 local fullVersion = "0.9.19"
 
-
-
 --[[
 DESCRIPTION
 ===========
-Displays basic info about active model.
-At startup looks for output named 'armed'. If found, flashes
-  'motor armed' when output value > 0.
-
-
-HISTORY
-=======
-Author Mike Shellim http://www.rc-soar.com/opentx/lua
-2026-02-14  v0.9.19	Major refactoring. Added support for 800 pixel wide screens (TX16S Mk3)
-2025-07-24  v0.9.18	Radios without T5/T6: fixed 'Error in create(): /WIDGETS/ShowAll/main.lua:187:"
-2024-12-25  v0.9.17	Changed two unintended global declarations to local.
-2024-12-24  v0.9.16	Fixed occasional double outputting of trims. Tidied up trims format.
-2024-12-14  v0.9.15	Added trims for A, E, T, R
-2024-11-05  v0.9.14	Added support for UNI firmware, refactored ELRS support
-2024-04-23  v0.9.13	Added ELRS sensors (1RSS/2RSS, RQly, TQly)
-2023-10-06  v0.9.12	Added T5 and T6 
-2023-01-05  v0.9.11	Min pane height for full info decreased to 168px (for EdgeTX 2.9)
-2022-10-17  v0.9.10	Min pane height for full info decreased to 169px (for EdgeTX 2.8)
-2022-02-05  v0.9.9	Min pane height for full info decreased to 170px (for EdgeTX)
-2021-10-09  v0.9.8 	Workaround for https://github.com/opentx/opentx/issues/6201
-					Support for additional battery telemetry (batsens table)
-2021-10-09  v0.9.7 	Display o/s name correctly when running EdgeTX
-2021-02-21  v0.9.6 	Looks for A1, A2 if no RxBt telemetry found
-2021-02-21  v0.9.5 	refactored hms
-2021-01-04  v0.9.4 	Fixed negative timer values shown incorrectly
-					Negative timer values rendered with INVERS font
-					Increased font size of timers
-					Layout improved for single column panels
-2020-05-22  v0.9.3 	Added opentx version
-					Cleaned up color assignment in Refresh()
-2020-05-22  v0.9.2 	Fixed 'disabled' message when displaying full screen
-2020-05-16  v0.9.1 	Added option to show undefined LS's as dots
-					Displays at all pane sizes
-					Cosmetic improvements
-2019-11-23  v0.9.0 	First release
+Displays basic info about the active model, with optional motor armed warning.
 
 REQUIREMENTS
 ============
 Transmitter with colour screen 480 or 800 pixels wide
-Other screens are not supported.
 OpenTX v 2.2 or later
+EdgeTX v 2.4 or later
 
 INSTALLATION INSTRUCTIONS
 ============
