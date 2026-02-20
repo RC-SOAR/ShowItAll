@@ -5,7 +5,7 @@ local fullVersion = "0.9.19"
 HISTORY
 =======
 Author Mike Shellim http://www.rc-soar.com/opentx/lua
-2026-02-14  v0.9.19	Refactored; added support for 800 pixel wide screens (TX16S Mk3)
+2026-02-14  v0.9.19	Major refactoring. Added support for 800 pixel wide screens (TX16S Mk3)
 2025-07-24  v0.9.18	Radios without T5/T6: fixed 'Error in create(): /WIDGETS/ShowAll/main.lua:187:"
 2024-12-25  v0.9.17	Changed two unintended global declarations to local.
 2024-12-24  v0.9.16	Fixed occasional double outputting of trims. Tidied up trims format.
@@ -41,7 +41,7 @@ At startup looks for output named 'armed'. If found, flashes
 
 REQUIREMENTS
 ============
-Transmitter with colour screen 480x272 or 800x480. 
+Transmitter with colour screen 480 or 800 pixels wide
 Other screens are not supported.
 OpenTX v 2.2 or later
 
@@ -111,6 +111,7 @@ local trims
 local LSDefLo -- bitmap of definition state for LS's 0-31
 local LSDefHi -- bitmap of definition state for LS's 32-63
 
+-- properties for different screen resolutions
 local propsSwitchSymbols = {
 	[480] = {w=5, h=8, weight=2},
 	[800] = {w=5, h=10, weight=2},
@@ -143,7 +144,7 @@ local propTimers = {
 
 local propLS = {
 	[480] = {x=288, y=39, w=6, h=7, xPitch=8, xSep=12, yPitch=9, font=SMLSIZE},
-	[800] = {x=520, y=58, w=8, h=9, xPitch=10, xSep=14, yPitch=12, font=SMLSIZE},
+	[800] = {x=520, y=62, w=8, h=9, xPitch=10, xSep=14, yPitch=12, font=SMLSIZE},
 }
 
 local propSticks = {
@@ -301,38 +302,34 @@ Background update. Called periodically by OpenTX.
 local function background(wgt)
 end
 
+--[[
+FUNCTION: fmtHMS
+Format a number as two-digit string, padding with zero if necessary.	
+replacement for buggy string.format()
+https://github.com/opentx/opentx/issues/6201
+	@param v number - value to format
+	@return string - formatted value (e.g., "05" for 5)
+--]]
+local function fmtHMS (v)
+	return #(v .. "") > 1 and v or ("0" ..v)
+end
 
 --[[
 FUNCTION: hms
 Convert time in seconds to string format [-]hh:mm:ss.
-	@param n number - time in seconds (may be negative)
+	@param tim number - time in seconds (may be negative)
 	@return string - formatted as [-]hh:mm:ss
 --]]
-local function hms (n)
+local function hms (tim)
 
-	local stSign
-	if n < 0 then
-		stSign = "-"
-		n = -n
-	else
-		stSign = " "
-	end
-
+	local n = math.abs (tim)
 	local hh = math.floor (n/3600)
 	n = n % 3600
 	local mm = math.floor (n/60)
 	local ss = n % 60
 
-	-- replacement for buggy string.format()
-	-- https://github.com/opentx/opentx/issues/6201
-	local function fmt (v)
-		return #(v .. "") >=2 and v or ("0" ..v)
-	end
-	return stSign .. fmt(hh) .. ':' .. fmt(mm) .. ':' .. fmt(ss)
+	return (tim < 0 and "-" or " ") .. fmtHMS(hh) .. ':' .. fmtHMS(mm) .. ':' .. fmtHMS(ss)
 end
-
-
-
 
 --[[
 FUNCTION: drawSwitchSymbol
@@ -422,6 +419,7 @@ local function to1DP (val)
 	local dec = a % 10
 	return (val < 0 and "-" or "") .. intpart .. "." .. dec
 end
+
 --[[
 FUNCTION: getCelsTotalVoltage
 Sum cell voltages from cells table.
@@ -439,6 +437,7 @@ end
 --[[
 FUNCTION: getAirBatt
 Get air battery sensor reading. Finds highest priority active sensor from batsens table.
+For Cels sensor, sums cell voltages to get total voltage.
 	@return table - {sensor_name, voltage_string}
 --]]
 local function getAirBatt ()
@@ -447,7 +446,6 @@ local function getAirBatt ()
 	for i = 1, #batsens do
 		sensor = batsens[i]
 		val = getValue(sensor)
-		print ("+++ Sensor", sensor, val)
 		if sensor == "Cels" and type (val) == "table" then
 			val = getCelsTotalVoltage(val)
 		end
@@ -470,13 +468,14 @@ local function drawTelemetry (zone)
 	local y0 = zone.y + p.y
 
 	local fields = {}
-	fields [#fields + 1] = {'TxBt:',to1DP(getValue(idTxV))}
+	fields [#fields + 1] = {'TxBt',to1DP(getValue(idTxV))}
 	fields [#fields + 1] =  getAirBatt()
-	fields [#fields + 1] = {'1RSS:', getValue('1RSS')}
-	fields [#fields + 1] = {'2RSS:', getValue('2RSS')}
-	fields [#fields + 1] = {'RQly:', getValue('RQly')}
-	fields [#fields + 1] = {'RSSI:', getValue('RSSI')}
-	fields [#fields + 1] = {'VFR:', getValue('VFR')}
+	fields [#fields + 1] = {'1RSS', getValue('1RSS')}
+	fields [#fields + 1] = {'2RSS', getValue('2RSS')}
+	fields [#fields + 1] = {'RQly', getValue('RQly')}
+	fields [#fields + 1] = {'RSSI', getValue('RSSI')}
+	fields [#fields + 1] = {'VFR', getValue('VFR')}
+	-- ADD OTHER FIELDS HERE AS DESIRED (except GPS)
 
 	local flags = p.font + colorFlags
 	local x = x0
@@ -485,7 +484,7 @@ local function drawTelemetry (zone)
 	for i = 1, #fields do
 		local val = fields [i][2]
 		if val and val ~= 0 then
-			lcd.drawText (x, y, fields[i][1], flags)
+			lcd.drawText (x, y, fields[i][1] .. ":", flags)
 			lcd.drawText (x + p.xValOffset, y, val, flags)
 			cnt = cnt+1
 			if cnt % 2 == 0 then
@@ -680,9 +679,9 @@ local function refresh(wgt)
 		colorFlags = CUSTOM_COLOR
 	end
 
-	-- check that it's a supported resolutoin
+	-- check that it's a supported resolution
 	if propFM [LCD_W] == nil then
-		lcd.drawText (wgt.zone.x + 10, wgt.zone.y + 10, "Unsupported screen", MIDSIZE + colorFlags)
+		lcd.drawText (wgt.zone.x + 10, wgt.zone.y + 10, "Unsupported display res", SMLSIZE + colorFlags)
 		return
 	end
 

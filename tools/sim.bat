@@ -1,0 +1,83 @@
+@echo off
+setlocal
+echo:  
+
+:: ====== S E T T I N G S =======
+
+:: ================= TX SELECTION
+:: set "tx=tx15"
+set "tx=tx16s"
+:: set "tx=nv14"
+
+:: ================= O/S selection
+set os=edgetx
+:: set os=opentx
+
+:: ===========  OS VERSION 
+:: set "version=2.12"
+:: set "version=2.11"
+set "version=3.0"
+:: set "version=2.3.15" REM for OpenTX simulator
+:: set "version=2.10"
+
+
+:: ================= FOLDER PATHS
+set "src=D:\MikeDocuments\_GitProjects\ETX_OTX projects\Showall\src" REM set the source folder for the widget files
+set "dest=WIDGETS\Showall" REM set the destination folder on the SD card for the widget files
+
+
+:: ====== S E T T I N G S  E N D =======
+
+if %tx% == tx15 set "res=480x320"
+if %tx% == tx16s set "res=480x272"
+if %tx% == nv14 set "res=320x480"
+
+:: set the folder path for the sim executable based on the version
+if %os% == edgetx (
+    set "simfile=C:\Program Files\EdgeTX\Companion %version%\simulator.exe"
+    if %version% == 2.12 set "simfile=C:\Program Files (x86)\EdgeTX\Companion %version%\simulator.exe"
+    if %version% == 3.0 set "simfile=C:\Program Files\EdgeTX\Companion %version%\bin\simulator.exe"
+    
+    )
+) else (
+    if %version% == 2.3.15 (
+        set "simfile=C:\Program Files (x86)\OpenTX\Companion 2.3\simulator.exe"
+    )
+)
+
+if not exist "%simfile%" (
+    echo Simulator executable not found: "%simfile%"
+    pause
+    exit /b 1
+)
+
+:: set the SD card path
+if %version% == 2.3.15 (
+    set "sdcard_path=D:\OneDrive\RC\__OpenTX\%version%\SDCard\c%res%"
+) else (
+    set "sdcard_path=D:\OneDrive\RC\__EdgeTX\%version%\SDCard\c%res%"
+)
+
+if not exist "%sdcard_path%" (
+    echo SD card path does not exist: "%sdcard_path%"
+    pause
+    exit /b 1
+)
+
+
+:: copy widget files to the sim SD card
+xcopy "%src%\" "%sdcard_path%\%dest%" /s /i /y
+if errorlevel 1 (
+    echo XCOPY failed!
+    exit /b 1
+) else (
+    echo XCOPY succeeded.
+)
+
+set "radio=%os%-%tx%"
+
+echo Sim executable: "%simfile%"
+echo SD card path: "%sdcard_path%"
+echo Starting EdgeTX sim with %radio% profile...
+
+START "" "%simfile%" -r %radio% -w sd -s "%sdcard_path%"
