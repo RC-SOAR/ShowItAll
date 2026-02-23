@@ -413,7 +413,7 @@ local function getAirBatt ()
 		if sensor == "Cels" and type (val) == "table" then
 			val = getCelsTotalVoltage(val)
 		end
-		if val and val > 0 then
+		if type (val) == "number" and val > 0 then
 			val = to1DP(val)
 			return {sensor, val}
 		end

@@ -5,9 +5,9 @@ echo:
 :: ====== S E T T I N G S =======
 
 :: ================= TX SELECTION
-:: set "tx=tx15"
-set "tx=tx16s"
-:: set "tx=tx16smk3"
+set "tx=tx15"
+:: set "tx=tx16s"
+:: "tx=tx16smk3"
 :: set "tx=x10"
 :: set "tx=nv14"
 
@@ -17,8 +17,8 @@ set "tx=tx16s"
 :: ===========  OS abd VERSION 
 set "os=edgetx"        REM EdgeTX
 :: set "version=2.10"
-set "version=2.11"
-:: set "version=2.12"
+:: set "version=2.11"
+set "version=2.12"
 :: set "version=3.0" 
 
 :: set "os=opentx"       REM OpenTX
