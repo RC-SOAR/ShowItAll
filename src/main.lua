@@ -73,6 +73,8 @@ local colorFlags
 local sticks = {}
 local trims
 
+local switches = {"sa","sb","sc","sd","se","sf","sg","sh","si","sj"}
+
 -- Logical switch bitmap
 local LSDefLo -- bitmap of definition state for LS's 0-31
 local LSDefHi -- bitmap of definition state for LS's 32-63
@@ -132,6 +134,8 @@ local propInfo = {
 	[480] = {xArmed = 233, yArmed = 0, xVer = 287, yVer1 = 0, yVer2 = 13, fontArmed=MIDSIZE, fontVer=SMLSIZE},
 	[800] = {xArmed = 466, yArmed = 5, xVer = 520, yVer1 = 10, yVer2=28,fontArmed=MIDSIZE, fontVer=SMLSIZE},
 }
+
+local switches = {}
 	
 -- ========= F U N C T I O N S =============
 
@@ -212,6 +216,19 @@ local function create(zone, options)
 	inf = getFieldInfo('trim-t5');  if inf then trims [#trims + 1] = {'T5', inf.id}; end
 	inf = getFieldInfo('trim-t6');  if inf then trims [#trims + 1] = {'T6', inf.id}; end
 
+	-- cache switch ids
+	local labels = {"sa","sb","sc","sd","se","sf","sg","sh","si","sj"}
+	for _, lbl in ipairs (labels) do
+		if getFieldInfo(lbl) then
+			switches [#switches + 1] = {lbl=string.upper(lbl), id=getFieldInfo(lbl).id}
+		end
+	end
+
+	-- raise switch block to allow sufficient margin beneath
+	if #switches > 8 then
+		propsSwitches [LCD_W].y = propsSwitches [LCD_W].y - propsSwitches [LCD_W].dy/2
+	end
+	
   	-- o/s version
 	local _, _, major, minor, rev, osname = getVersion()
 	strVer = (osname or "OpenTX") .. " " .. major .. "." .. minor.. "." .. rev
@@ -329,13 +346,15 @@ local function drawSwitches (zone)
 	local x = zone.x + p.x
 	local y0 = zone.y + p.y
 	local y = y0
-	for i = 0, 7 do
-		lcd.drawText (x, y, "S".. string.char(string.byte('A')+i), p.font + colorFlags)
-		drawSwitchSymbol (x + p.symXOffset, y + p.symYOffset, getValue (idSA+i))
-		y = y + p.dy
-		if i == 3 then
+	local nPerCol = math.ceil (#switches / 2)
+	for i, sw in ipairs (switches) do
+		lcd.drawText (x, y, sw.lbl, p.font + colorFlags)
+		drawSwitchSymbol (x + p.symXOffset, y + p.symYOffset, getValue (sw.id))
+		if i == nPerCol then
 			x = x + p.dx
 			y = y0
+		else
+			y = y + p.dy
 		end
 	end
 end

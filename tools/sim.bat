@@ -1,4 +1,4 @@
-@echo on
+@echo off
 setlocal
 echo:  
 
@@ -7,7 +7,7 @@ echo:
 :: ================= TX SELECTION
 set "tx=tx15"
 :: set "tx=tx16s"
-:: "tx=tx16smk3"
+:: set "tx=tx16smk3"
 :: set "tx=x10"
 :: set "tx=nv14"
 
