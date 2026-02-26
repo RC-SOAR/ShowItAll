@@ -1,13 +1,5 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
-local fullVersion = "0.9.19"
-
-local function memKB(label)
-    collectgarbage("collect")          -- force GC first for a clean reading
-    local kb = collectgarbage("count")
-    print(label .. ": " .. string.format("%.2f", kb) .. " KB")
-end
-
-memKB("+++ after module load")
+local fullVersion = "0.9.20"
 
 --[[
 DESCRIPTION
@@ -145,8 +137,6 @@ local propInfo = {
 
 local switches = {}
 
-memKB("+++ after module locals")
-	
 -- ========= F U N C T I O N S =============
 
 --[[
@@ -271,7 +261,6 @@ local function create(zone, options)
 		{name='R', id=getFieldInfo('rud').id},
   		}
 
-	memKB("+++ after create")
 	return {zone=zone, options=options}
 end
 
@@ -689,7 +678,6 @@ local function refresh(wgt)
 	drawTimers (wgt.zone)
     drawLS (wgt.zone)
     drawInfo (wgt.zone)
-	memKB("+++ after refresh")
 end
 
 return { name=WGTNAME, options=defaultOptions, create=create, update=update, refresh=refresh, background=background }
