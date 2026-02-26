@@ -1,6 +1,14 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
 local fullVersion = "0.9.19"
 
+local function memKB(label)
+    collectgarbage("collect")          -- force GC first for a clean reading
+    local kb = collectgarbage("count")
+    print(label .. ": " .. string.format("%.2f", kb) .. " KB")
+end
+
+memKB("+++ after module load")
+
 --[[
 DESCRIPTION
 ===========
@@ -136,6 +144,8 @@ local propInfo = {
 }
 
 local switches = {}
+
+memKB("+++ after module locals")
 	
 -- ========= F U N C T I O N S =============
 
@@ -225,10 +235,10 @@ local function create(zone, options)
 	end
 
 	-- raise switch block to allow sufficient margin beneath
-	if #switches > 8 then
+	if #switches > 8 and LCD_H < 600 then
 		propsSwitches [LCD_W].y = propsSwitches [LCD_W].y - propsSwitches [LCD_W].dy/2
 	end
-	
+
   	-- o/s version
 	local _, _, major, minor, rev, osname = getVersion()
 	strVer = (osname or "OpenTX") .. " " .. major .. "." .. minor.. "." .. rev
@@ -261,6 +271,7 @@ local function create(zone, options)
 		{name='R', id=getFieldInfo('rud').id},
   		}
 
+	memKB("+++ after create")
 	return {zone=zone, options=options}
 end
 
@@ -678,6 +689,7 @@ local function refresh(wgt)
 	drawTimers (wgt.zone)
     drawLS (wgt.zone)
     drawInfo (wgt.zone)
+	memKB("+++ after refresh")
 end
 
 return { name=WGTNAME, options=defaultOptions, create=create, update=update, refresh=refresh, background=background }
