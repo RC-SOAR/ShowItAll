@@ -218,6 +218,7 @@ local function create(zone, options)
 
 	-- cache switch ids
 	local labels = {"sa","sb","sc","sd","se","sf","sg","sh","si","sj"}
+	switches = {}
 	for _, lbl in ipairs (labels) do
 		if getFieldInfo(lbl) then
 			switches [#switches + 1] = {lbl=string.upper(lbl), id=getFieldInfo(lbl).id}
