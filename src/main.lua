@@ -25,14 +25,14 @@ USER SETTABLE VARIABLES
 MAX_LS = maximum number of logical switches to display
 A value of 20 is recommended for good performance in general use
 If not using other scripts, you can increase this value
-to a suggested max of 32 --]]
+to a suggested max of 32 
+--]]
 
 local MAX_LS = 20
 
 --[[
-SHOW_UNDEF_LS_AS_DOT determines how undefined logical switches
-are rendered
-If false (default), undefined logical switches are treated as 'off'.
+SHOW_UNDEF_LS_AS_DOT determines how to render undefined logical switches.
+If false (default), undefined logical switches are shown as 'off'.
 If true, then undefined ls's are rendered as dots (nice!), but involves a cache
 look up and a power cycle to refresh cache - best used only if logical switches
 have been finalised.
@@ -44,10 +44,8 @@ local SHOW_UNDEF_LS_AS_DOT = false
 END OF USER SETTABLE VARIABLES
 ============================== --]]
 
-
--- ========= LOCAL VARIABLES =============
+-- ========= MODULE VARIABLES =============
 -- Field ids
-local idSA
 local idTmr1
 local idLS1
 local idTxV
@@ -70,10 +68,9 @@ local defaultOptions = {
 	{"ForeColor", COLOR, BLACK},
 	}
 local colorFlags
-local sticks = {}
+local sticks
 local trims
-
-local switches = {"sa","sb","sc","sd","se","sf","sg","sh","si","sj"}
+local switches
 
 -- Logical switch bitmap
 local LSDefLo -- bitmap of definition state for LS's 0-31
@@ -134,8 +131,6 @@ local propInfo = {
 	[480] = {xArmed = 233, yArmed = 0, xVer = 287, yVer1 = 0, yVer2 = 13, fontArmed=MIDSIZE, fontVer=SMLSIZE},
 	[800] = {xArmed = 466, yArmed = 5, xVer = 520, yVer1 = 10, yVer2=28,fontArmed=MIDSIZE, fontVer=SMLSIZE},
 }
-
-local switches = {}
 
 -- ========= F U N C T I O N S =============
 
@@ -200,7 +195,6 @@ Caches field IDs and initializes logical switch bitmaps.
 local function create(zone, options)
 
 	-- cache field id's 
-	idSA = getFieldInfo('sa').id
 	idLS1 = getFieldInfo('ls1').id
 	idTmr1 = getFieldInfo('timer1').id
 	idTxV = getFieldInfo('tx-voltage').id
@@ -219,9 +213,10 @@ local function create(zone, options)
 	-- cache switch ids
 	local labels = {"sa","sb","sc","sd","se","sf","sg","sh","si","sj"}
 	switches = {}
-	for _, lbl in ipairs (labels) do
-		if getFieldInfo(lbl) then
-			switches [#switches + 1] = {lbl=string.upper(lbl), id=getFieldInfo(lbl).id}
+	for i, lbl in ipairs (labels) do
+		inf = getFieldInfo(lbl)
+		if inf then
+			switches [i] = {lbl=string.upper(lbl), id=inf.id}
 		end
 	end
 
@@ -460,6 +455,8 @@ local function drawTelemetry (zone)
 	fields [#fields + 1] = {'RSSI', getValue('RSSI')}
 	fields [#fields + 1] = {'VFR', getValue('VFR')}
 	-- ADD OTHER FIELDS HERE AS DESIRED (except GPS)
+	-- Note: current layout only supports 2 columns of 3 lines. Additional fields will 
+	-- require layout adjustments.
 
 	local flags = p.font + colorFlags
 	local x = x0
@@ -632,13 +629,10 @@ local function drawInfo (zone)
 	if idchArmed and getValue (idchArmed) > 0 then
 		lcd.drawText (zone.x + p.xArmed, zone.y + p.yArmed, "motor armed!", p.fontArmed +  BLINK + INVERS)
 	else
-		-- lcd.drawText (x, y + p.yOffsetVer, strVer .. "/" .. fullVersion, p.fontVer + colorFlags)
 		lcd.drawText (zone.x + p.xVer, zone.y + p.yVer1, strVer, p.fontVer + colorFlags)
 		lcd.drawText (zone.x + p.xVer, zone.y + p.yVer2, "ShowAll " .. fullVersion, p.fontVer + colorFlags)
 	end
 end
-
-
 
 --[[
 FUNCTION: refresh
@@ -681,4 +675,11 @@ local function refresh(wgt)
     drawInfo (wgt.zone)
 end
 
-return { name=WGTNAME, options=defaultOptions, create=create, update=update, refresh=refresh, background=background }
+return {
+	name=WGTNAME,
+	options=defaultOptions,
+	create=create,
+	update=update,
+	refresh=refresh,
+	background=background
+	}
