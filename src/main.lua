@@ -1,5 +1,5 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
-local fullVersion = "0.9.20"
+local fullVersion = "0.9.21"
 
 --[[
 DESCRIPTION
@@ -213,16 +213,13 @@ local function create(zone, options)
 	-- cache switch ids
 	local labels = {"sa","sb","sc","sd","se","sf","sg","sh","si","sj"}
 	switches = {}
-	for i, lbl in ipairs (labels) do
+	local i = 1
+	for _, lbl in ipairs (labels) do
 		inf = getFieldInfo(lbl)
 		if inf then
 			switches [i] = {lbl=string.upper(lbl), id=inf.id}
+			i = i + 1
 		end
-	end
-
-	-- raise switch block to allow sufficient margin beneath
-	if #switches > 8 and LCD_H < 600 then
-		propsSwitches [LCD_W].y = propsSwitches [LCD_W].y - propsSwitches [LCD_W].dy/2
 	end
 
   	-- o/s version
@@ -341,6 +338,12 @@ local function drawSwitches (zone)
 	local p = propsSwitches [LCD_W]
 	local x = zone.x + p.x
 	local y0 = zone.y + p.y
+
+	-- If more than 8 switches and screen height is limited, 
+	-- raise switch block to allow margin beneath.
+	if #switches > 8 and LCD_H < 480 then
+		y0 = y0 - p.dy/2
+	end
 	local y = y0
 	local nPerCol = math.ceil (#switches / 2)
 	for i, sw in ipairs (switches) do
