@@ -6,19 +6,20 @@ echo:
 
 :: ================= TX SELECTION
 :: set "tx=tx15"
-set "tx=tx16s"
+:: set "tx=tx16s"
 :: set "tx=tx16smk3"
 :: set "tx=x10"
-:: set "tx=nv14"
+set "tx=nv14"
+:: set "tx=x9d"
 
 :: ================= O/S selection
 
 
 :: ===========  OS abd VERSION 
 set "os=edgetx"        REM EdgeTX
-set "version=2.10"
+:: set "version=2.10"
 :: set "version=2.11"
-:: set "version=2.12"
+set "version=2.12"
 :: set "version=3.0" 
 
 :: set "os=opentx"       REM OpenTX
@@ -33,11 +34,12 @@ set "dest=WIDGETS\Showall" REM set the destination folder on the SD card for the
 
 :: ====== S E T T I N G S  E N D =======
 
-if %tx% == tx15 set "res=480x320"
-if %tx% == tx16s set "res=480x272"
-if %tx% == x10 set "res=480x272"
-if %tx% == nv14 set "res=320x480"
-if %tx% == tx16smk3 set "res=800x480"
+if %tx% == tx15 set "res=c480x320"
+if %tx% == tx16s set "res=c480x272"
+if %tx% == x10 set "res=c480x272"
+if %tx% == nv14 set "res=c320x480"
+if %tx% == tx16smk3 set "res=c800x480"
+if %tx% == x9d set "res=bw212x64"
 
 :: set the folder path for the sim executable based on the version
 
@@ -60,9 +62,9 @@ if not exist "%simfile%" (
 
 :: set the SD card path
 if %os% == opentx (
-    set "sdcard_path=D:\OneDrive\RC\__OpenTX\%version%\SDCard\c%res%"
+    set "sdcard_path=D:\OneDrive\RC\__OpenTX\%version%\SDCard\%res%"
 ) else (
-    set "sdcard_path=D:\OneDrive\RC\__EdgeTX\%version%\SDCard\c%res%"
+    set "sdcard_path=D:\OneDrive\RC\__EdgeTX\%version%\SDCard\%res%"
 )
 
 if not exist "%sdcard_path%" (
