@@ -6,10 +6,10 @@ echo:
 
 :: ================= TX SELECTION
 :: set "tx=tx15"
-:: set "tx=tx16s"
+set "tx=tx16s"
 :: set "tx=tx16smk3"
 :: set "tx=x10"
-set "tx=nv14"
+:: set "tx=nv14"
 :: set "tx=x9d"
 
 :: ================= O/S selection
