@@ -16,4 +16,6 @@ ShowItAll displays all the basics in a single widget. So you spend less time wid
 - OpenTX 2.2+ or Edge 2.4+
 
 ## Installation
-Pick from the latest release, download the zip file and follow the instructions in the PDF.
+
+The latest release can be downloaded from:
+https://github.com/RC-SOAR/ShowItAll/releases/latest
