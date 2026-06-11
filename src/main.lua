@@ -1,5 +1,5 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
-local fullVersion = "0.9.21"
+local fullVersion = "0.9.22"
 
 --[[
 DESCRIPTION
@@ -19,6 +19,11 @@ Please read instructions provided in the zip package
 DISCLAIMER
 ==========
 CHECK FOR CORRECT OPERATION BEFORE USE. IF IN DOUBT DO NOT FLY!!
+
+LICENSE
+=======
+This script is provided under the GNU General Public License v3.
+See <https://www.gnu.org/licenses/gpl-3.0.en.html> for details.
 
 USER SETTABLE VARIABLES
 =======================
@@ -278,8 +283,8 @@ end
 
 --[[
 FUNCTION: fmtHMS
-Format a number as two-digit string, padding with zero if necessary.	
-replacement for buggy string.format()
+Format a number as two-digit string, padding with zero if necessary.
+Replacement for buggy string.format().
 https://github.com/opentx/opentx/issues/6201
 	@param v number - value to format
 	@return string - formatted value (e.g., "05" for 5)
