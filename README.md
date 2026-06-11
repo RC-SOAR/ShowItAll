@@ -2,7 +2,7 @@
 <img width="480" height="273" alt="image" src="https://github.com/user-attachments/assets/399dabc1-6e6b-4a2a-9e91-d3a88888ee3c" />
 
 ## Description
-ShowItAll displays all the basics in a single widget. So you spend less time widgeting and more time flying.
+ShowItAll is a full screen widget for colour screen radios. It displays all the essential info for your new setup. So you spend less time widgeting and more time flying.
 
 - Compatible with most colour screen radios
 - Essential info condensed in a single widget
