@@ -20,3 +20,7 @@ ShowItAll is a full screen widget for colour screen radios. It displays all the 
 The latest release can be downloaded from:
 https://github.com/RC-SOAR/ShowItAll/releases/latest
 Download the .zip file as directed, and then follow the instructions in the included PDF.
+
+## License
+This script is provided under the GNU General Public License v3.
+See <https://www.gnu.org/licenses/gpl-3.0.en.html> for details.
