@@ -1,4 +1,4 @@
-# "Show It All" info widget
+# "Show It All" widget for EdgeTX and OpenTX
 <img width="480" height="273" alt="image" src="https://github.com/user-attachments/assets/399dabc1-6e6b-4a2a-9e91-d3a88888ee3c" />
 
 ## Description
