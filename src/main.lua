@@ -1,5 +1,5 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
-local fullVersion = "0.9.22"
+local fullVersion = "0.9.23"
 
 --[[
 DESCRIPTION
@@ -22,6 +22,7 @@ CHECK FOR CORRECT OPERATION BEFORE USE. IF IN DOUBT DO NOT FLY!!
 
 LICENSE
 =======
+Copyright (c) Mike Shellim
 This script is provided under the GNU General Public License v3.
 See <https://www.gnu.org/licenses/gpl-3.0.en.html> for details.
 
@@ -461,7 +462,8 @@ local function drawTelemetry (zone)
 	fields [#fields + 1] = {'2RSS', getValue('2RSS')}
 	fields [#fields + 1] = {'RQly', getValue('RQly')}
 	fields [#fields + 1] = {'RSSI', getValue('RSSI')}
-	fields [#fields + 1] = {'VFR', getValue('VFR')}
+	fields [#fields + 1] = {'VFR',  getValue('VFR')}
+	fields [#fields + 1] = {'TPWR', getValue('TPWR')}
 	-- ADD OTHER FIELDS HERE AS DESIRED (except GPS)
 	-- Note: current layout only supports 2 columns of 3 lines. Additional fields will 
 	-- require layout adjustments.
