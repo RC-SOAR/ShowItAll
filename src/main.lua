@@ -1,5 +1,5 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
-local fullVersion = "0.9.23"
+local fullVersion = "0.9.24"
 
 --[[
 DESCRIPTION
@@ -51,6 +51,9 @@ END OF USER SETTABLE VARIABLES
 ============================== --]]
 
 -- ========= MODULE VARIABLES =============
+-- model filename
+local modelFilename
+
 -- Field ids
 local idTmr1
 local idLS1
@@ -138,6 +141,10 @@ local propInfo = {
 	[800] = {xArmed = 466, yArmed = 5, xVer = 520, yVer1 = 10, yVer2=28,fontArmed=MIDSIZE, fontVer=SMLSIZE},
 }
 
+local propModelInfo = {
+	[480] = {x=6, y=290, dy=19, font=SMLSIZE},
+	[320] = {x=6, y=180, dy=15, font=SMLSIZE},
+}
 -- ========= F U N C T I O N S =============
 
 --[[
@@ -191,7 +198,7 @@ end
 
 --[[
 FUNCTION: create
-Create the widget. Called by OpenTX during widget initialization.
+Create the widget. Called by during widget initialization.
 Caches field IDs and initializes logical switch bitmaps.
 	@param zone table - display zone
 	@param options table - widget options
@@ -260,13 +267,15 @@ local function create(zone, options)
 		{name='R', id=getFieldInfo('rud').id},
   		}
 
+	modelFilename = model.getInfo().filename
+
 	return {zone=zone, options=options}
 end
 
 
 --[[
 FUNCTION: update
-Update widget settings. Called by OpenTX when widget options change.
+Update widget settings. Called when widget options change.
 	@param wgt table - widget state
 	@param newOptions table - new widget options
 --]]
@@ -276,7 +285,7 @@ end
 
 --[[
 FUNCTION: background
-Background update. Called periodically by OpenTX.
+Background update. Called periodically by o/s.
 	@param wgt table - widget state
 --]]
 local function background(wgt)
@@ -644,9 +653,34 @@ local function drawInfo (zone)
 	end
 end
 
+
+--[[
+FUNCTION: drawModelInfo
+	Draw labels and filename
+	@param zone table - display zone
+--]]
+local function drawModelInfo (zone)
+	local p = propModelInfo [LCD_H]
+	if p == nil then
+		return
+	end
+
+	local y = zone.y + p.y
+
+	local labels = model.getInfo().labels
+	if labels == nil or labels == "" then
+		labels = "[unlabelled]"
+	end
+
+	lcd.drawText (zone.x + p.x,  y, "Labels: " .. labels, p.font)
+	y = y + p.dy
+	lcd.drawText (zone.x + p.x, y, "Filename: " .. modelFilename, p.font)
+
+end
+
 --[[
 FUNCTION: refresh
-Refresh widget display. Called by OpenTX when the widget is displayed.
+Refresh widget display. Called when the widget is displayed.
 	@param wgt table - widget state
 --]]
 local function refresh(wgt)
@@ -683,6 +717,7 @@ local function refresh(wgt)
 	drawTimers (wgt.zone)
     drawLS (wgt.zone)
     drawInfo (wgt.zone)
+	drawModelInfo (wgt.zone)
 end
 
 return {
