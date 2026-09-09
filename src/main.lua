@@ -1,5 +1,5 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
-local fullVersion = "0.9.24"
+local fullVersion = "0.9.25"
 
 --[[
 DESCRIPTION
@@ -87,56 +87,67 @@ local LSDefHi -- bitmap of definition state for LS's 32-63
 
 -- properties for different screen resolutions
 local propsSwitchSymbols = {
+	[320] = {w=5, h=6, weight=2},
 	[480] = {w=5, h=8, weight=2},
 	[800] = {w=5, h=10, weight=2},
 }
 
 local propsSwitches = {
+	[320] = {x=1, y=33, dx=28, dy=12, font=SMLSIZE, symXOffset=15, symYOffset=3	},
 	[480] = {x=6, y=36, dx=40, dy=12, font=SMLSIZE, symXOffset=22, symYOffset=4	},
 	[800] = {x=6, y=58, dx=70, dy=18, font=SMLSIZE, symXOffset=25, symYOffset=6	},
 }
 
 local propFM = {
+	[320] = {x=100, y=86, font=MIDSIZE},
 	[480] = {x=130, y=105, font=MIDSIZE},
 	[800] = {x=245, y=180, font=MIDSIZE},
 }
 
 local propModelName = {
+	[320] = {x=1, y=0, font=MIDSIZE},
 	[480] = {x=2, y=0, font=MIDSIZE},
 	[800] = {x=2, y=2, font=MIDSIZE},
 }
 
 local propTelemetry = {
+	[320] = {x=55, y=30, font=0, xPitch = 70, xValOffset=38, lineHt = 16},
 	[480] = {x=106, y=29, font=0, xPitch = 90, xValOffset=50, lineHt = 18},
 	[800] = {x=200, y=58, font=0, xPitch = 120, xValOffset=70, lineHt = 25},
 }
 
 local propTimers = {
+	[320] = {x=210, y=28, font=0, xOffset = 15, dy=20},
 	[480] = {x=288, y=100, font=0, xOffset = 22, dy=20},
 	[800] = {x=520, y=180, font=0, xOffset = 22, dy=25},
 }
 
 local propLS = {
+	[320] = {x=193, y=100, w=6, h=7, xPitch=8, xSep=12, yPitch=9, font=SMLSIZE},
 	[480] = {x=288, y=39, w=6, h=7, xPitch=8, xSep=12, yPitch=9, font=SMLSIZE},
 	[800] = {x=520, y=62, w=8, h=9, xPitch=10, xSep=14, yPitch=12, font=SMLSIZE},
 }
 
 local propSticks = {
+	[320] = {x=1, y=90, dy=12},
 	[480] = {x=6, y=105, dy=12},
 	[800] = {x=6, y=180, dy=18},
 }
 
 local propTrims = {
+	[320] = {x=115, y=110, dx = 30, dy=12, font=SMLSIZE},
 	[480] = {x=144, y=135, dx = 52, dy=12, font=SMLSIZE},
 	[800] = {x=265, y=230, dx = 52, dy=20, font=SMLSIZE},
 }
 
 local propChans = {
+	[320] = {x=50, y=90, dy=8, charLtOffset = -3, charRtOffset = 38, yTxtOff = -5, wRect = 36,  barHt = 5,font=SMLSIZE},
 	[480] = {x=65, y=105, dy=8, charLtOffset = -3, charRtOffset = 38, yTxtOff = -5, wRect = 36,  barHt = 5,font=SMLSIZE},
 	[800] = {x=90, y=185, dy=12, charLtOffset = -3, charRtOffset = 65, yTxtOff = -5, wRect = 60,  barHt = 9,font=SMLSIZE},
 }
 
 local propInfo = {
+	[320] = {xArmed = 162, yArmed = 0, xVer = 206, yVer1 = 0, yVer2 = 13, fontArmed=MIDSIZE, fontVer=SMLSIZE},
 	[480] = {xArmed = 233, yArmed = 0, xVer = 287, yVer1 = 0, yVer2 = 13, fontArmed=MIDSIZE, fontVer=SMLSIZE},
 	[800] = {xArmed = 466, yArmed = 5, xVer = 520, yVer1 = 10, yVer2=28,fontArmed=MIDSIZE, fontVer=SMLSIZE},
 }
