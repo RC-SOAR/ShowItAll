@@ -1,5 +1,5 @@
 # "Show It All" widget for EdgeTX and OpenTX
-<img width="480" height="273" alt="image" src="https://github.com/user-attachments/assets/399dabc1-6e6b-4a2a-9e91-d3a88888ee3c" />
+<img width="480" height="320" alt="2026-09-05_223849_cr" src="https://github.com/user-attachments/assets/24995311-b764-4624-bc67-358fbd1e806e" />
 
 ## Description
 ShowItAll is a widget for colour screen radios. It condenses all essential info into one large pane. So you spend less time widgeting and more time flying.
