@@ -1,5 +1,5 @@
 local WGTNAME = "showal0.9"  -- max 9 characters
-local fullVersion = "0.9.25"
+local fullVersion = "0.9.26"
 
 --[[
 DESCRIPTION
@@ -117,13 +117,13 @@ local propTelemetry = {
 }
 
 local propTimers = {
-	[320] = {x=210, y=28, font=0, xOffset = 15, dy=20},
+	[320] = {x=210, y=85, font=0, xOffset = 15, dy=15},
 	[480] = {x=288, y=100, font=0, xOffset = 22, dy=20},
 	[800] = {x=520, y=180, font=0, xOffset = 22, dy=25},
 }
 
 local propLS = {
-	[320] = {x=193, y=100, w=6, h=7, xPitch=8, xSep=12, yPitch=9, font=SMLSIZE},
+	[320] = {x=193, y=33, w=6, h=7, xPitch=8, xSep=12, yPitch=9, font=SMLSIZE},
 	[480] = {x=288, y=39, w=6, h=7, xPitch=8, xSep=12, yPitch=9, font=SMLSIZE},
 	[800] = {x=520, y=62, w=8, h=9, xPitch=10, xSep=14, yPitch=12, font=SMLSIZE},
 }
